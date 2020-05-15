@@ -1,14 +1,18 @@
-import React, { Fragment, useEffect } from 'react'
+import React, { Fragment, useEffect, useContext } from 'react'
 import PropTypes from 'prop-types'
 import Spinner from '../layout/Spinner'
 import {Link} from 'react-router-dom';
 import Repos from '../repos/Repos';
+import GithubContext from '../../context/github/githubContext';
 
 
-const User = ({ singleUser, loading, getSingleUser, getSingleUserRepo, repos, match }) =>  {
+const User = ({ getSingleUserRepo, repos, match }) =>  {
+
+    const githubContext = useContext(GithubContext);
+    const { getUser, loading, user} = githubContext;
 
     useEffect(() => {
-      getSingleUser(match.params.username);
+      getUser(match.params.username);
       getSingleUserRepo(match.params.username);
       // eslint-disable-next-line
     }, []);
@@ -26,7 +30,7 @@ const User = ({ singleUser, loading, getSingleUser, getSingleUserRepo, repos, ma
         following, 
         public_repos, 
         public_gists, 
-        hireable } = singleUser;
+        hireable } = user;
 
     if(loading) return <Spinner />
 
@@ -97,9 +101,6 @@ const User = ({ singleUser, loading, getSingleUser, getSingleUserRepo, repos, ma
 }
 
 User.propTypes = {
-    loading: PropTypes.bool.isRequired,
-    singleUser: PropTypes.object.isRequired,
-    getSingleUser: PropTypes.func.isRequired,
     getSingleUserRepo: PropTypes.func.isRequired,
     repos: PropTypes.array.isRequired,
 }
