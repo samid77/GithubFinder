@@ -1,6 +1,6 @@
 import React, { useReducer } from 'react';
 import axios from 'axios';
-import githubContext from './githubContext';
+import GithubContext from './githubContext';
 import githubReducer from './githubReducer';
 import {
     SEARCH_USERS,
@@ -74,6 +74,17 @@ const GithubState = props => {
     }
 
     /** Get Repos */
+    const getUserRepos = async (username) => {
+        setLoading();
+
+        const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+
+        dispatch({
+            type: GET_REPOS,
+            payload: res.data
+        })
+
+    }
 
     /** Set Loading */
     const setLoading = () => dispatch({ type: SET_LOADING});
@@ -81,7 +92,7 @@ const GithubState = props => {
     /** Set Search Status */
     const setSearchStatus = () => dispatch({ type: SET_SEARCHSTATUS});
 
-    return <githubContext.Provider
+    return <GithubContext.Provider
         value={{
             users: state.users,
             user: state.user,
@@ -92,10 +103,11 @@ const GithubState = props => {
             clearUserSearch,
             getUsers,
             getUser,
+            getUserRepos
         }}
     >
         {props.children}
-    </githubContext.Provider>
+    </GithubContext.Provider>
 }
 
 export default GithubState;
